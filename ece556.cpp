@@ -126,6 +126,36 @@ int solveRouting(routingInst *rst){
   return EXIT_SUCCESS;
 }
 
+/* Function to retrive edge endpoints for writeOutput */
+void edgeEnds(point *p1, point *p2, routingInst *rst, int iD ){
+	
+	/* Variable to determine if edge is vertical or horizontal */
+	int edgeID_VorH = iD - ((rst -> gy) * ((rst -> gx) - 1));
+	
+	/* If edge is horizontal */
+	if(edgeID_VorH <= 0){
+		
+		/* Assign values to p1,p2 y values */
+		p1->y = floor((iD - 1) / ((rst->gx) - 1));
+		p2->y = (p1->y);
+		
+		/* Assign values to p1,p2 x values, variables switched for compilation order */
+		p2->x = iD - (((rst->gx) - 1)*(p2->y));
+		p1->x = (p2->x) - 1;
+	}
+	/* If edge is vertical */
+	else{
+		
+		/* Assign values to p1,p2 x values */
+		p1->x = floor((edgeID_VorH - 1) / ((rst->gy) - 1));
+		p2->x = p1->x;
+		
+		/* Assign values to p1,p2 y values */
+		p2->y = edgeID_VorH - ((p2->x) * (rst->gy - 1));
+		p1->y = (p2->y) - 1;	
+	}
+	}
+
 int writeOutput(const char *outRouteFile, routingInst *rst){
 	
 	/* check for null parameters */
@@ -240,33 +270,3 @@ int release(routingInst *rst){
 
   return 1;
 }
-  
-/* Function to retrive edge endpoints for writeOutput */
-void edgeEnds(point *p1, point *p2, routingInst *rst, int iD ){
-	
-	/* Variable to determine if edge is vertical or horizontal */
-	int edgeID_VorH = iD - ((rst -> gy) * ((rst -> gx) - 1))
-	
-	/* If edge is horizontal */
-	if(edgeID_VorH <= 0){
-		
-		/* Assign values to p1,p2 y values */
-		p1->y = floor((iD - 1) / ((rst->gx) - 1));
-		p2->y = (p1->y);
-		
-		/* Assign values to p1,p2 x values, variables switched for compilation order */
-		p2->x = iD - (((rst->gx) - 1)*(p2->y));
-		p1->x = (p2->x) - 1;
-	}
-	/* If edge is vertical */
-	else{
-		
-		/* Assign values to p1,p2 x values */
-		p1->x = floor((edgeID_VorH - 1) / ((rst->gy) - 1));
-		p2->x = p1->x;
-		
-		/* Assign values to p1,p2 y values */
-		p2->y = edgeID_VorH - ((p2->x) * (rst->gy - 1));
-		p1->y = (p2->y) - 1;	
-	}
-	}
