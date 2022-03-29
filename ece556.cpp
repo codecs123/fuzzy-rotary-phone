@@ -134,7 +134,8 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
     printf("Argument file or routingInst is null");
     return 0;
   }
-	
+
+  FILE* outFile;
   /* Open output file to begin writing */	
   outFile = fopen(outRouteFile, "w");
   
@@ -146,11 +147,11 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
   point p1Ex;
   point p2Ex;
 				/* set x values */
-  p1Ex.x = 0
-  p2Ex.x = 0
+  p1Ex.x = 0;
+  p2Ex.x = 0;
 				/* set y values */
-  p1Ex.y = 0
-  p2Ex.y = 0
+  p1Ex.y = 0;
+  p2Ex.y = 0;
   
   /* Instantiate temp point values */
   int xDir; /* used to determine direction */
@@ -162,13 +163,13 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
   for (int i = 0; i < rst->numNets; i++){
 	  
 	  /* Print net number */
-	  fprintf(outFile,"n" + i + "\n");
+    fprintf(outFile,"n%d \n",i);
 	  
-	  for (int m = 0; m < rst->nets[i].nroute.numSegs.; m++){
+	  for (int m = 0; m < rst->nets[i].nroute.numSegs; m++){
 		  
 		  for (int n = 0; n < rst->nets[i].nroute.segments[m].numEdges; n++){
 			  
-			  edgeEnds(&p1, &p2, rst, rst -> nets[i].segments[m].edges[n]);
+			  edgeEnds(&p1, &p2, rst, rst -> nets[i].nroute.segments[m].edges[n]);
 		  
 				/* variable to hold number of edges */
 				edgeAmount = rst->nets[i].nroute.segments[m].numEdges;
@@ -235,7 +236,7 @@ int release(routingInst *rst){
 
   free(rst->edgeUtils);
 
-  free(rst)
+  free(rst);
 
   return 1;
 }
