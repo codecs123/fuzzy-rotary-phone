@@ -134,19 +134,37 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
     printf("Argument file or routingInst is null");
     return 0;
   }
-
-  FILE* outFile;
 	
   /* Open output file to begin writing */	
   outFile = fopen(outRouteFile, "w");
+  
+  /* Instantiate temp points */
+  point p1;
+  point p2;
+  
+  /* Instantiate temp ex points and set to initial values */
+  point p1Ex;
+  point p2Ex;
+				/* set x values */
+  p1Ex.x = 0
+  p2Ex.x = 0
+				/* set y values */
+  p1Ex.y = 0
+  p2Ex.y = 0
+  
+  /* Instantiate temp point values */
+  int xDir; /* used to determine direction */
+  int yDir; /* used to determine direction */
+  int xEx; /* used to hold previous value */
+  int yEx; /* used to hold previous value */
   
   /* Parent loop for number of nets in routingInst*/
   for (int i = 0; i < rst->numNets; i++){
 	  
 	  /* Print net number */
-    fprintf(outFile,"n%d \n",i);
+	  fprintf(outFile,"n" + i + "\n");
 	  
-	  for (int m = 0; m < rst->nets[i].nroute.numSegs; m++){
+	  for (int m = 0; m < rst->nets[i].nroute.numSegs.; m++){
 		  
 		  for (int n = 0; n < rst->nets[i].nroute.segments[m].numEdges; n++){
 			  
@@ -156,18 +174,47 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
 				edgeAmount = rst->nets[i].nroute.segments[m].numEdges;
 		  
 				/* Print case for if only one edge is used in route */
-				if(rst->nets[i].nroute.segments[m].numEdges == 1)
+				if(edgeAmount == 1)
 				{
 				fprintf(outFile, "(" + p1.x + "," + p1.y + ")-(" + p2.x + "," + p2.y + ")");
 				}
-		    }
-		  
-	    }	  
-	  
+				
+				/* If statement to determine if this is the first segment */
+				if(n == 0){
+				p2Ex = p2;
+				p1Ex = p1;
+				xEx = abs(p1.x - p2.x); 
+				yEx = abs(p1.y - p2.y); 
+				}
+				/* if this is not the first segment */
+				else{
+				xDir = abs(p1.x - p2.x); /* if this has a non zero value then there is movment in the x direction */
+				yDir = abs(p1.y - p2.y); /* if this has a non zero value then there is movment in the y direction */
+				
+				/* Start evaluating if path is horizontal */ 
+				if((xDir > 0)&&(xEx > 0)){
+					if(p2.x == p1Ex.x){
+						p1Ex = p1;
+						}
+					else if (p1.x == p1Ex.x){
+						p1Ex = p2;
+					}
+					else if (p2.x == p2Ex.x){
+						p2Ex = p1;
+					}
+					else if(p1.x == p2Ex.x){
+						p2Ex = p2;
+					}
+				if ((edgeAmount-1) == n){
+					
+				}
+					
+				}
+				}		
+		    }  
+	    }	    
     }
-
   return 1;
-}
 }
 
 
