@@ -136,7 +136,7 @@ void edgeEnds(point *p1, point *p2, routingInst *rst, int iD ){
 	if(edgeID_VorH <= 0){
 		
 		/* Assign values to p1,p2 y values */
-		p1->y = floor((iD - 1) / ((rst->gx) - 1));
+		p1->y = ((iD - 1) / ((rst->gx) - 1));
 		p2->y = (p1->y);
 		
 		/* Assign values to p1,p2 x values, variables switched for compilation order */
@@ -147,7 +147,7 @@ void edgeEnds(point *p1, point *p2, routingInst *rst, int iD ){
 	else{
 		
 		/* Assign values to p1,p2 x values */
-		p1->x = floor((edgeID_VorH - 1) / ((rst->gy) - 1));
+		p1->x = ((edgeID_VorH - 1) / ((rst->gy) - 1));
 		p2->x = p1->x;
 		
 		/* Assign values to p1,p2 y values */
@@ -202,7 +202,7 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
 			  edgeEnds(&p1, &p2, rst, rst -> nets[i].nroute.segments[m].edges[n]);
 		  
 				/* variable to hold number of edges */
-				edgeAmount = rst->nets[i].nroute.segments[m].numEdges;
+				int edgeAmount = rst->nets[i].nroute.segments[m].numEdges;
 		  
 				/* Print case for if only one edge is used in route */
 				if(edgeAmount == 1)
