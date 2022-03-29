@@ -207,7 +207,7 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
 				/* Print case for if only one edge is used in route */
 				if(edgeAmount == 1)
 				{
-				fprintf(outFile, "(" + p1.x + "," + p1.y + ")-(" + p2.x + "," + p2.y + ")");
+				  fprintf(outFile, "(%d,%d)-(%d,%d)",p1.x,p1.y,p2.x,p2.y);
 				}
 				
 				/* If statement to determine if this is the first segment */
@@ -240,8 +240,10 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
 					
 				}
 					
+				} if ((yDir >0) && (yEx > 0)) {
+				  //
 				}
-				}		
+				}
 		    }  
 	    }	    
     }
