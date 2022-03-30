@@ -63,13 +63,11 @@ int readBenchmark(const char *fileName, routingInst *rst){
 
         //inputFile >> bx1 >> by1 >> bx2 >> by2 >> cap;
         fscanf(inputFile, "%d %d %d %d %d", &bx1, &by1, &bx2, &by2, &cap);
-        printf("block \n");
         if (bx1 != bx2) {
             edg = (bx1 + bx2)/2 + by1 * (rst->gx - 1);
         } else {
             edg = ((by1 + by2)/2) * rst->gx + bx1 + rst->gy * (rst->gx - 1);
         }
-        printf("edge %d \n", edg);
 
         rst->edgeCaps[edg] = cap;
     }
