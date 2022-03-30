@@ -14,7 +14,7 @@ int readBenchmark(const char *fileName, routingInst *rst){
     inputFile = fopen(fileName, "r");
 
     fscanf(inputFile, "%*s %d %d ", &(rst->gx), &(rst->gy));
-
+    
     fscanf(inputFile, "%*s %d", &(rst->cap));
     
     fscanf(inputFile, "%*s %*s %d", &(rst->numNets));
@@ -107,6 +107,32 @@ int solveRouting(routingInst *rst){
             rst->nets[i].nroute.segments[j].edges =
                     (int*)malloc(rst->nets[i].nroute.segments[j].numEdges*sizeof(int));
 
+
+	    int xtemp = rst->nets[i].pins[j].x;
+	    int ytemp = rst->nets[i].pins[j].y;
+	    for (int k = 0; k < rst->nets[i].nroute.segments[j].numEdges; ++k) {
+	      if(abs(x1) > 0) { // horizontal edges
+		if(x1 > 0) {
+		  rst->nets[i].nroute.segments[j].edges[k] = xtemp + ytemp * (rst->gx - 1);
+		  x1--;
+		  xtemp++;
+		} else if(x1 < 0) {
+		  rst->nets[i].nroute.segments[j].edges[k] = (xtemp - 1) + ytemp * (rst->gx - 1);
+		  x1++;
+		  xtemp--;
+		}
+	      } else if(abs(y1) > 0) { //vertical edges
+		if(y1 > 0) {
+		  rst->nets[i].nroute.segments[j].edges[k] = ytemp * (rst->gx) + xtemp + (rst->gy) * (rst->gx - 1);
+		  y1--;
+		  ytemp++;
+		} else if (y1 < 0) {
+		  rst->nets[i].nroute.segments[j].edges[k] = (ytemp - 1) * (rst->gx) + xtemp + (rst->gy) * (rst->gx - 1);
+		  y1++;
+		  ytemp--;
+		}
+	      }		
+	    }
             if( rst->nets[i].nroute.segments[j].edges == NULL)
             {
                 fprintf(stderr, "Memory not allocated for edge array.\n");
@@ -129,24 +155,24 @@ void edgeEnds(point *p1, point *p2, routingInst *rst, int iD ){
     if(edgeID_VorH <= 0){
 
         /* Assign values to p1,p2 y values */
-        p1->y = ((iD - 1) / ((rst->gx) - 1));
+        p1->y = ((iD) / ((rst->gx) - 1));
         p2->y = (p1->y);
 
         /* Assign values to p1,p2 x values, variables switched for compilation order */
-        p2->x = iD - (((rst->gx) - 1)*(p2->y));
-        p1->x = (p2->x) - 1;
+        p1->x = iD - (((rst->gx) - 1)*(p2->y));
+        p2->x = (p1->x) + 1;
     }
         /* If edge is vertical */
     else{
 
         /* Assign values to p1,p2 x values */
-        p1->x = ((edgeID_VorH - 1) / ((rst->gy) - 1));
+        p1->x = ((edgeID_VorH) % (rst->gx));
         p2->x = p1->x;
 
         /* Assign values to p1,p2 y values */
-        p2->y = edgeID_VorH - ((p2->x) * (rst->gy - 1));
-        p1->y = (p2->y) - 1;
-    }
+        p1->y = (edgeID_VorH - (p2->x)) %  (rst->gy - 1);
+        p2->y = (p1->y) + 1;
+    } 
 }
 
 int writeOutput(const char *outRouteFile, routingInst *rst){
@@ -284,7 +310,7 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
                         }
                     }
                 }
-            }
+      	    }
         }
         fprintf(outFile, "!\n");
     }
