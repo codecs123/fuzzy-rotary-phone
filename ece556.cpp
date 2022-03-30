@@ -8,55 +8,33 @@
 int readBenchmark(const char *fileName, routingInst *rst){
 
     if(fileName == NULL || rst == NULL) {
-        printf("null");
+        return 0;
     }
-    printf("1.1 \n");
     FILE* inputFile;
     inputFile = fopen(fileName, "r");
 
-    printf("1.2 \n");
-
-    //std::string bufferString;
-    printf("1.21 \n");
-    //inputFile >> bufferString; // skip "grid"
     fscanf(inputFile, "%*s %d %d ", &(rst->gx), &(rst->gy));
-    printf("1.23 \n");
-    //inputFile >> rst->gx;
-    printf("1.24 \n %d",rst->gx);
-    //inputFile >> rst->gy; // save grid dimensions
 
-    printf("1.3 \n");
-    //inputFile >> bufferString; // skip "capacity"
-    //inputFile >> rst->cap;
     fscanf(inputFile, "%*s %d", &(rst->cap));
-
-    // inputFile >> bufferString; // skip "num"
-    //inputFile >> bufferString; // skip "net"
-    //inputFile >> rst->numNets;
+    
     fscanf(inputFile, "%*s %*s %d", &(rst->numNets));
 
     rst->nets = (net*)malloc(rst->numNets * sizeof(net));
 
-    printf("1 \n");
     for (int i = 0; i < rst->numNets; ++i) { // create array of nets
 
-        //inputFile >> bufferString; // skip "n#"
         rst->nets[i].id = i;
-        //inputFile >> rst->nets[i].numPins;
+        
         fscanf(inputFile, "%*s %d", &(rst->nets[i].numPins));
 
         rst->nets[i].pins = (point*)malloc(rst->nets[i].numPins * sizeof(point));
 
-        printf("2 \n");
         for (int j = 0; j < rst->nets[i].numPins; ++j) { // create array of points
-            //inputFile >> rst->nets[i].pins[j].x;
-            //inputFile >> rst->nets[i].pins[j].y;
             fscanf(inputFile, "%d %d", &(rst->nets[i].pins[j].x), &(rst->nets[i].pins[j].y));
         }
     }
 
     int blocks;
-    //inputFile >> blocks;
     fscanf(inputFile, "%d", &blocks);
 
     int numEdges = rst->gx*(rst->gy - 1) + rst->gy*(rst->gx - 1);
@@ -67,9 +45,7 @@ int readBenchmark(const char *fileName, routingInst *rst){
 
 
     rst->edgeCaps = (int*)malloc(numEdges * sizeof(int));
-    printf("3 \n");
     rst->edgeUtils = (int*)malloc(numEdges * sizeof(int));
-    printf("4 \n");
 
     for(int i = 0; i < numEdges; ++i) {
         rst->edgeCaps[i] = rst->cap;
@@ -97,13 +73,9 @@ int readBenchmark(const char *fileName, routingInst *rst){
 
         rst->edgeCaps[edg] = cap;
     }
-    printf("edge 7 cap: %d \n",rst->edgeCaps[7]);
-    printf("edge 1 cap: %d \n", rst->edgeCaps[1]);
-
 
     fclose(inputFile);
 
-    printf("8 \n");
     return 1;
 }
 
@@ -114,14 +86,12 @@ int solveRouting(routingInst *rst){
     {
         rst->nets[i].nroute.numSegs = rst->nets[i].numPins - 1;
         rst->nets[i].nroute.segments = (segment*)malloc(rst->nets[i].nroute.numSegs*sizeof(segment));
-        printf("1 \n");
         if(rst->nets[i].nroute.segments == NULL)
         {
             fprintf(stderr, "Memory not allocated for route segments \n");
             return 0;
         }
 
-        printf("2 \n");
 
         for(int j = 0; j < rst->nets[i].nroute.numSegs; j++)
         {
@@ -129,7 +99,6 @@ int solveRouting(routingInst *rst){
             rst->nets[i].nroute.segments[j].p1 = rst->nets[i].pins[j];
             rst->nets[i].nroute.segments[j].p2 = rst->nets[i].pins[j+1];
 
-            printf("3 \n");
 
             x1 = rst->nets[i].pins[j+1].x - rst->nets[i].pins[j].x;
             y1 = rst->nets[i].pins[j+1].y - rst->nets[i].pins[j].y;
@@ -140,7 +109,6 @@ int solveRouting(routingInst *rst){
             rst->nets[i].nroute.segments[j].edges =
                     (int*)malloc(rst->nets[i].nroute.segments[j].numEdges*sizeof(int));
 
-            printf("4 \n");
             if( rst->nets[i].nroute.segments[j].edges == NULL)
             {
                 fprintf(stderr, "Memory not allocated for edge array.\n");
