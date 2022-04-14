@@ -170,7 +170,7 @@ void edgeEnds(point *p1, point *p2, routingInst *rst, int iD ){
         p2->x = p1->x;
 
         /* Assign values to p1,p2 y values */
-        p1->y = (edgeID_VorH - (p2->x)) %  (rst->gy - 1);
+        p1->y = edgeID_VorH / rst->gx;
         p2->y = (p1->y) + 1;
     } 
 }
@@ -226,7 +226,7 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
 
                 /* Print case for if only one edge is used in route */
                 if (edgeAmount == 1) {
-                    fprintf(outFile, "(%d,%d)-(%d,%d)", p1.x, p1.y, p2.x, p2.y);
+                    fprintf(outFile, "(%d,%d)-(%d,%d)\n", p1.x, p1.y, p2.x, p2.y);
                 }
 
                 /* If statement to determine if this is the first segment */
@@ -279,7 +279,7 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
                     } else if ((yDir > 0) && (yEx > 0)) {
 
                         if (p2.y == p1Ex.y) {
-                            p1 = p1Ex;
+                            p1Ex = p1;
                         } else if (p1.y == p1Ex.y) {
                             p1Ex = p2;
                         } else if (p2.y == p2Ex.y) {
