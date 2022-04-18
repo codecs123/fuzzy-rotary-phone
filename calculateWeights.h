@@ -1,7 +1,7 @@
 #ifndef __CALCULATE_WEIGHTS__
 #define __CALCULATE_WEIGHTS__
 
-#include ece556.h
+#include "ece556.h"
 #include <vector>
 
 /* function calculates the weight of each edge used in the previous routing solution

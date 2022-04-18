@@ -1,9 +1,11 @@
 #ifndef __ORDER_NETS__
 #define __ORDER_NETS__
 
-#include ece556.h
+#include "ece556.h"
 #include <algorithm> // needed for sort() function
 #include <vector>
+
+using std::sort; // used in orderNets function
 
 /* helper function used in the orderNets algorithm to determine
    which net comes first (higher cost) 

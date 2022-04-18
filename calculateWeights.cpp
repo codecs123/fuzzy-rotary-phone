@@ -1,6 +1,6 @@
-#include calculateWeights.h
+#include "calculateWeights.h"
 
-void calculateWeights(routingInst *inst, int *overflow, int *history, int *weight) {
+void calculateWeights(routingInst *rst, int *overflow, int *history, int *weight) {
 
    bool used[rst->numEdges];
    int edge;

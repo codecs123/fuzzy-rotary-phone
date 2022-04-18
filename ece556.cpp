@@ -39,6 +39,8 @@ int readBenchmark(const char *fileName, routingInst *rst){
 
     int numEdges = rst->gx*(rst->gy - 1) + rst->gy*(rst->gx - 1);
 
+    rst->numEdges = numEdges;
+    
     // EdgeID formulae
     // Horizontal: min(xlocal) + ylocal * xgrid
     // Vertical: min(ylocal) * (xgrid) + xlocal + ygrid * (xgrid - 1)

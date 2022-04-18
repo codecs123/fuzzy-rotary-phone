@@ -1,9 +1,9 @@
 /* used to order the nets during RRR */
-#include orderNets.h
+#include "orderNets.h"
 
 
 int compareCost(net one, net two) {
-   if(one.nroute.cost >= two.route.cost) {
+   if(one.cost >= two.cost) {
       return 1;
    } else {
       return 0;
