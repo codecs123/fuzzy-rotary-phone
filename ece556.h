@@ -52,6 +52,7 @@
    int numPins ; 		/* number of pins (or terminals) of the net */
    point *pins ; 		/* array of pins (or terminals) of the net. */
    route nroute ;		/* stored route for the net. */
+   int cost ;			/* stored cost for current route */
 
   } net ;
   
