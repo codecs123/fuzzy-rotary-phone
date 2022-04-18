@@ -1,3 +1,5 @@
+#include "netDec.h"
+
 void netDec(routingInst *rst){
 
     /* for loop to cycle through nets */
