@@ -15,7 +15,7 @@ void netDec(routingInst *rst){
 
         /* assign starting point values */
         point startIn = rst -> nets[i].pins[0];
-        point startIn2 = rst -> nets[i].pins[0];
+        point startIn2 = rst -> nets[i].pins[1];
 
         /* find the shortest x distance from point 1 to point 2 */
         int xShort = abs(rst->nets[i].pins[1].x - rst->nets[i].pins[0].x);
@@ -72,8 +72,8 @@ void netDec(routingInst *rst){
         closePoint[1] = startIn2;
 
         /* varibale to hold total pins for next loop*/
-        int totalPins2 = rst -> nets[i].numPins - 2;
-
+	int totalPins2 = rst -> nets[i].numPins - 2;
+	
         for(int p = 0; p < totalPins2; p++){
 
             /* create a very distant point for compairison to all other points */
@@ -150,29 +150,31 @@ void netDec(routingInst *rst){
 
                     /* if xCur < xComp1 < xComp2 */
                     bool x_lt_x1x2 = false;
+		    bool x_lt_x2x1 = false;
 
                     if((xComp1 <= xComp2) && (xCur < xComp1)){
                         x_lt_x1x2 = true;
                     }
 
                     /* if xCur < xComp2 < xComp1 */
-                    bool x_lt_x2x1 = false;
+                    // bool x_lt_x2x1 = false;
 
-                    if((xComp2 <= xComp1) && (xCur < xComp2)){
+                    else if((xComp2 <= xComp1) && (xCur < xComp2)){
                         x_lt_x2x1 = true;
                     }
 
                     /* if xComp2 < xComp1 < xCur */
                     bool x_gt_x1x2 = false;
+		    bool x_gt_x2x1 = false;
 
                     if((xComp1 >= xComp2) && (xCur > xComp1)){
                         x_gt_x1x2 = true;
                     }
 
                     /* if xComp1 < xComp2 < xCur */
-                    bool x_gt_x2x1 = false;
+                    // bool x_gt_x2x1 = false;
 
-                    if((xComp2 >= xComp1) && (xCur > xComp2)){
+                    else if((xComp2 >= xComp1) && (xCur > xComp2)){
                         x_gt_x2x1 = true;
                     }
                     /*-----------------------------------------------------------------*/
@@ -183,29 +185,31 @@ void netDec(routingInst *rst){
 
                     /* if yCur < yComp1 < yComp2 */
                     bool y_lt_y1y2 = false;
+		    bool y_lt_y2y1 = false;
 
                     if((yComp1 <= yComp2) && (yCur < yComp1)){
                         y_lt_y1y2 = true;
                     }
 
                     /* if yCur < yComp2 < yComp1 */
-                    bool y_lt_y2y1 = false;
+                    // bool y_lt_y2y1 = false;
 
-                    if((yComp2 <= yComp1) && (yCur < yComp2)){
+                    else if((yComp2 <= yComp1) && (yCur < yComp2)){
                         y_lt_y2y1 = true;
                     }
 
                     /* if yComp2 < yComp1 < yCur */
                     bool y_gt_y1y2 = false;
+		    bool y_gt_y2y1 = false;
 
                     if((yComp1 >= yComp2) && (yCur > yComp1)){
                         y_gt_y1y2 = true;
                     }
 
                     /* if yComp1 < yComp2 < yCur */
-                    bool y_gt_y2y1 = false;
+                    // bool y_gt_y2y1 = false;
 
-                    if((yComp2 >= yComp1) && (yCur > yComp2)){
+                    else if((yComp2 >= yComp1) && (yCur > yComp2)){
                         y_gt_y2y1 = true;
                     }
                     /*-----------------------------------------------------------------*/
@@ -446,6 +450,68 @@ void netDec(routingInst *rst){
                         }
                     }
                     /*-----------------sit 12-----------------------------------------------*/
+
+		    /*-----------------sit 13-----------------------------------------------*/
+		    else if(x_lt_x2x1 && y_lt_y1y2) {
+
+		      int xShort2 = abs(xComp2-xCur);
+		      int yShort2 = abs(yComp1-xCur);
+
+		      tempTotal2 = xShort2 + yShort2;
+
+		      if(tempTotal2 < farDist) {
+
+			farDist = tempTotal2;
+			nearPoint = curPoint;
+		      }
+		    }
+		    /*-----------------sit 13-----------------------------------------------*/
+
+		    /*-----------------sit 14-----------------------------------------------*/
+		    else if(x_lt_x2x1 && y_gt_y1y2) {
+
+		      int xShort2 = abs(xComp2-xCur);
+		      int yShort2 = abs(yComp1-xCur);
+
+		      tempTotal2 = xShort2 + yShort2;
+
+		      if(tempTotal2 < farDist) {
+
+			farDist = tempTotal2;
+			nearPoint = curPoint;
+		      }
+		    }
+		    /*-----------------sit 14-----------------------------------------------*/
+
+		    /*-----------------sit 15-----------------------------------------------*/
+		    else if(x_gt_x2x1 && y_lt_y1y2) {
+
+		      int xShort2 = abs(xComp2-xCur);
+		      int yShort2 = abs(yComp1-xCur);
+
+		      tempTotal2 = xShort2 + yShort2;
+
+		      if(tempTotal2 < farDist) {
+
+			farDist = tempTotal2;
+			nearPoint = curPoint;
+		      }
+		    }
+
+		    /*-----------------sit 16-----------------------------------------------*/
+		    else if(x_gt_x2x1 && y_gt_y1y2) {
+
+		      int xShort2 = abs(xComp2-xCur);
+		      int yShort2 = abs(yComp1-xCur);
+
+		      tempTotal2 = xShort2 + yShort2;
+
+		      if(tempTotal2 < farDist) {
+
+			farDist = tempTotal2;
+			nearPoint = curPoint;
+		      }
+		    }
 
                 /* if (doeshave) */
                 }

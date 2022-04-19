@@ -33,7 +33,7 @@ int main(int argc, char **argv)
 	timeval currentTime;
 	int maxTime = 900; // 15 mins in sec
 	gettimeofday(&startTime, NULL); // save start time
-	
+	printf("here 1");
 
  	int status;
 	char *decomp = argv[1];
@@ -58,13 +58,14 @@ int main(int argc, char **argv)
 
  	/// create a new routing instance
  	routingInst *rst = new routingInst;
-	
+	printf("here2");
  	/// read benchmark
  	status = readBenchmark(inputFileName, rst);
  	if(status==0){
  		printf("ERROR: reading input file \n");
  		return 1;
  	}
+	printf("here3");
 
 	if(decompOn) { // decompose nets if desired
 	  netDec(rst);
@@ -77,6 +78,7 @@ int main(int argc, char **argv)
  		release(rst);
  		return 1;
  	}
+	printf("here4");
 
 	int overflow[rst->numEdges];
 	int history[rst->numEdges];
@@ -124,6 +126,7 @@ int main(int argc, char **argv)
 	      bestRoute = cost;
 	      writeOutput(outputFileName, rst);
 	    }
+	    iteration++;
 	  }
 	}
 
