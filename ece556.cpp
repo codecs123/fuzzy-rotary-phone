@@ -112,24 +112,33 @@ int solveRouting(routingInst *rst){
 
 	    int xtemp = rst->nets[i].pins[j].x;
 	    int ytemp = rst->nets[i].pins[j].y;
+	    int edgeID;
 	    for (int k = 0; k < rst->nets[i].nroute.segments[j].numEdges; ++k) {
 	      if(abs(x1) > 0) { // horizontal edges
 		if(x1 > 0) {
-		  rst->nets[i].nroute.segments[j].edges[k] = xtemp + ytemp * (rst->gx - 1);
+		  edgeID = xtemp + ytemp * (rst->gx - 1);
+		  rst->nets[i].nroute.segments[j].edges[k] = edgeID;
+		  rst->edgeUtils[edgeID] += 1;
 		  x1--;
 		  xtemp++;
 		} else if(x1 < 0) {
-		  rst->nets[i].nroute.segments[j].edges[k] = (xtemp - 1) + ytemp * (rst->gx - 1);
+		  edgeID = (xtemp - 1) + ytemp * (rst->gx - 1);
+		  rst->nets[i].nroute.segments[j].edges[k] = edgeID;
+		  rst->edgeUtils[edgeID] += 1;
 		  x1++;
 		  xtemp--;
 		}
 	      } else if(abs(y1) > 0) { //vertical edges
 		if(y1 > 0) {
-		  rst->nets[i].nroute.segments[j].edges[k] = ytemp * (rst->gx) + xtemp + (rst->gy) * (rst->gx - 1);
+		  edgeID = ytemp * (rst->gx) + xtemp + (rst->gy) * (rst->gx - 1);
+		  rst->nets[i].nroute.segments[j].edges[k] = edgeID;
+		  rst->edgeUtils[edgeID] += 1;
 		  y1--;
 		  ytemp++;
 		} else if (y1 < 0) {
-		  rst->nets[i].nroute.segments[j].edges[k] = (ytemp - 1) * (rst->gx) + xtemp + (rst->gy) * (rst->gx - 1);
+		  edgeID = (ytemp - 1) * (rst->gx) + xtemp + (rst->gy) * (rst->gx - 1);
+		  rst->nets[i].nroute.segments[j].edges[k] = edgeID;
+		  rst->edgeUtils[edgeID] += 1;
 		  y1++;
 		  ytemp--;
 		}

@@ -9,12 +9,24 @@
  /**
   * A structure to represent a 2D Point. 
   */
- typedef struct
+ struct point
  {
    int x ; /* x coordinate ( >=0 in the routing grid)*/
    int y ; /* y coordinate ( >=0 in the routing grid)*/
 
- } point ;
+ point(): x(-1), y(-1) {}
+ point(int _x, int _y): x(_x), y(_y) {}
+
+   bool operator==(const point& n) const
+     {
+      return (n.x == x) && (n.y ==y);
+     }
+   bool operator!=(const point& n) const
+   {
+    return !(*this == n);
+   }
+
+ };
 
 
   /**

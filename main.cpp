@@ -2,8 +2,24 @@
 
 #include "ece556.h"
 #include <sys/time.h>
+#include <string.h>
+#include "netDec.h"
+#include "aStar.h"
 #include "orderNets.h"
 #include "calculateWeights.h"
+
+
+// frees the old route from memory between iterations
+void releaseRoute(routingInst *rst) {
+  for(int i = 0; i < rst->numNets; ++i) {
+    for(int j = 0; j < rst->nets[i].nroute.numSegs; ++j) {
+
+      free(rst->nets[i].nroute.segments[j].edges);
+    }
+    free(rst->nets[i].nroute.segments);
+  }
+}
+
 
 int main(int argc, char **argv)
 {
@@ -50,6 +66,9 @@ int main(int argc, char **argv)
  		return 1;
  	}
 
+	if(decompOn) { // decompose nets if desired
+	  netDec(rst);
+	}
 	
  	/// run actual routing
  	status = solveRouting(rst);
@@ -58,10 +77,6 @@ int main(int argc, char **argv)
  		release(rst);
  		return 1;
  	}
-
-	if(decompOn) { // decompose nets if desired
-	  netDec(rst);
-	}
 
 	int overflow[rst->numEdges];
 	int history[rst->numEdges];
@@ -73,15 +88,55 @@ int main(int argc, char **argv)
 	  history[i] = 1;
 	  weights[i] = 0;
 	}
-	
-	
+
+	int iteration = 0;
+	int cost;
+	int bestRoute = 0;
+
+	printf("1\n");
+
+	if(orderingOn) {
+	  gettimeofday(&currentTime, NULL);
+	  while((currentTime.tv_sec - startTime.tv_sec) < maxTime) {
+
+	    cost = 0;
+	    printf("2\n");
+	    calculateWeights(rst, overflow, history, weights);
+
+	    releaseRoute(rst);
+
+	    printf("3\n");
+	    orderNets(rst);
+
+	    printf("4\n");
+	    solveRoutingAstar(rst);
+
+	    //calculate total cost of solution
+	    for(int i = 0; i < rst->numNets; ++i) {
+	      cost += rst->nets[i].cost;
+	    }
+
+	    printf("Iteration: %d, Cost: %d", iteration, cost);
+
+	    if(iteration == 0) {
+	      bestRoute = cost;
+	    } else if (cost < bestRoute) {
+	      bestRoute = cost;
+	      writeOutput(outputFileName, rst);
+	    }
+	  }
+	}
+
+
+	if(!orderingOn) {
  	/// write the result
- 	status = writeOutput(outputFileName, rst);
- 	if(status==0){
+	  status = writeOutput(outputFileName, rst);
+	  if(status==0){
  		printf("ERROR: writing the result \n");
  		release(rst);
  		return 1;
- 	}
+	  }
+	}
 
  	release(rst);
  	printf("\nDONE!\n");	
