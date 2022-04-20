@@ -22,10 +22,11 @@ void calculateWeights(routingInst *rst, int *overflow, int *history, int *weight
 	      if(overflow[edge] < 0) { // calculate overflow
                 overflow[edge] = 0;
 	      }
-              if(overflow[edge] > 0) { // calculate history adjustment
-		history[edge] += 1;
+	      if(overflow[edge] > 0) { // calculate history adjustment
+	        history[edge] += 1;
               }
 	      weight[edge] = overflow[edge] * history[edge]; // calculate weight
+	      used[edge] = true;
            }
 	   rst->nets[i].cost += weight[edge]; // add weight to cost of net
 	 }

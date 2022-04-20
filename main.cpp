@@ -33,8 +33,7 @@ int main(int argc, char **argv)
 	timeval currentTime;
 	int maxTime = 900; // 15 mins in sec
 	gettimeofday(&startTime, NULL); // save start time
-	printf("here 1");
-
+      
  	int status;
 	char *decomp = argv[1];
 	char *ordering = argv[2];
@@ -46,26 +45,31 @@ int main(int argc, char **argv)
 
 	if(strcmp(decomp, "-d=1") == 0) {
 	  decompOn = true;
-	} else {
+	} else if(strcmp(decomp, "-d=0") == 0) {
 	  decompOn = false;
+	} else {
+	  printf("Usage : ./ROUTE.exe -d=# -n=# <input_benchmark_name> <output_file_name> \n");
+	  return 1;
 	}
 
 	if(strcmp(ordering, "-n=1") == 0) {
 	  orderingOn = true;
-	} else {
+	} else if (strcmp(ordering, "-n=0") == 0){
 	  orderingOn = false;
+	} else {
+	  printf("Usage : ./ROUTE.exe -d=# -n=# <input_benchmark_name> <output_file_name> \n");
+	  return 1;
 	}
 
  	/// create a new routing instance
  	routingInst *rst = new routingInst;
-	printf("here2");
+       
  	/// read benchmark
  	status = readBenchmark(inputFileName, rst);
  	if(status==0){
  		printf("ERROR: reading input file \n");
  		return 1;
  	}
-	printf("here3");
 
 	if(decompOn) { // decompose nets if desired
 	  netDec(rst);
@@ -78,7 +82,6 @@ int main(int argc, char **argv)
  		release(rst);
  		return 1;
  	}
-	printf("here4");
 
 	int overflow[rst->numEdges];
 	int history[rst->numEdges];
@@ -95,36 +98,37 @@ int main(int argc, char **argv)
 	int cost;
 	int bestRoute = 0;
 
-	printf("1\n");
 
 	if(orderingOn) {
 	  gettimeofday(&currentTime, NULL);
-	  while((currentTime.tv_sec - startTime.tv_sec) < maxTime) {
+	  while(((currentTime.tv_sec - startTime.tv_sec) < maxTime) && (iteration < 4)) {
 
 	    cost = 0;
-	    printf("2\n");
 	    calculateWeights(rst, overflow, history, weights);
 
 	    releaseRoute(rst);
 
-	    printf("3\n");
 	    orderNets(rst);
 
-	    printf("4\n");
 	    solveRoutingAstar(rst);
 
 	    //calculate total cost of solution
-	    for(int i = 0; i < rst->numNets; ++i) {
-	      cost += rst->nets[i].cost;
+	    for(int i = 0; i < rst->numEdges; ++i) {
+	      cost+= overflow[i];
+	      overflow[i] = 0;
 	    }
 
-	    printf("Iteration: %d, Cost: %d", iteration, cost);
+	    printf("Iteration: %d, Cost: %d \n", iteration, cost);
 
-	    if(iteration == 0) {
+	    if((iteration == 0) || (cost < bestRoute)) {
 	      bestRoute = cost;
-	    } else if (cost < bestRoute) {
-	      bestRoute = cost;
-	      writeOutput(outputFileName, rst);
+	      status = writeOutput(outputFileName, rst);
+	      printf("Printed at iteration: %d\n", iteration);
+	      if(status == 0) {
+		printf("ERROR: writing the result \n");
+		release(rst);
+		return 1;
+	      }
 	    }
 	    iteration++;
 	  }
@@ -141,7 +145,7 @@ int main(int argc, char **argv)
 	  }
 	}
 
- 	release(rst);
+	release(rst);
  	printf("\nDONE!\n");	
  	return 0;
 }

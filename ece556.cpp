@@ -332,14 +332,16 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
 int release(routingInst *rst){
     // start at bottom work back to top
     for (int i = 0; i < rst->numNets; ++i) { // parse through each net
+      /*  if(rst->nets[i].nroute.segments != NULL) {
         for (int j = 0; j < rst->nets[i].nroute.numSegs; ++j) { // each segment of route
             free(rst->nets[i].nroute.segments[j].edges);
-        }
+	    }*/
         free(rst->nets[i].nroute.segments);
 
         free(rst->nets[i].pins);
+	//}
     }
-
+  
     free(rst->nets);
 
     free(rst->edgeCaps);
