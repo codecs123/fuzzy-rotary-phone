@@ -18,6 +18,9 @@ void releaseRoute(routingInst *rst) {
     }
     free(rst->nets[i].nroute.segments);
   }
+  for(int i = 0; i < rst->numEdges; ++i) {
+      rst->edgeUtils[i] = 0;
+  }
 }
 
 
@@ -95,13 +98,14 @@ int main(int argc, char **argv)
 	}
 
 	int iteration = 0;
-	int cost;
+	int cost = 0;
 	int bestRoute = 0;
 
-
+	int print = 0;
+	
 	if(orderingOn) {
 	  gettimeofday(&currentTime, NULL);
-	  while(((currentTime.tv_sec - startTime.tv_sec) < maxTime) && (iteration < 2)) {
+	  while(((currentTime.tv_sec - startTime.tv_sec) < maxTime) && (iteration < 12)) {
 
 	    cost = 0;
 	    calculateWeights(rst, overflow, history, weights);
@@ -115,15 +119,15 @@ int main(int argc, char **argv)
 	    solveRoutingAstar(rst);
 
 	    //calculate total cost of solution
-	    for(int i = 0; i < rst->numEdges; ++i) {
-	      cost+= overflow[i];
-	      overflow[i] = 0;
+	    for(int i = 0; i < rst->numNets; ++i) {
+	      cost+= rst->nets[i].nroute.cost;
 	    }
 
 	    printf("Iteration: %d, Cost: %d \n", iteration, cost);
 
-	    if((iteration == 0) || (cost < bestRoute)) {
+	    if((iteration == 0) || ((cost < bestRoute) && (print < 3))) {
 	      bestRoute = cost;
+	      print++;
 	      status = writeOutput(outputFileName, rst);
 	      printf("Printed at iteration: %d\n", iteration);
 	      if(status == 0) {
