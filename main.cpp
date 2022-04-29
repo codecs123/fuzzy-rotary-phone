@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 
 	if(orderingOn) {
 	  gettimeofday(&currentTime, NULL);
-	  while(((currentTime.tv_sec - startTime.tv_sec) < maxTime) && (iteration < 4)) {
+	  while(((currentTime.tv_sec - startTime.tv_sec) < maxTime) && (iteration < 2)) {
 
 	    cost = 0;
 	    calculateWeights(rst, overflow, history, weights);
@@ -109,6 +109,8 @@ int main(int argc, char **argv)
 	    releaseRoute(rst);
 
 	    orderNets(rst);
+
+	    printf("reordered \n");
 
 	    solveRoutingAstar(rst);
 

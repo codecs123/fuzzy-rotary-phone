@@ -50,6 +50,7 @@
   {
     int numSegs ;  	/* number of segments in a route*/
     segment *segments ;  /* an array of segments (note, a segment may be flat, L-shaped or any other shape, based on your preference */
+    int cost;
 
   } route ;
  

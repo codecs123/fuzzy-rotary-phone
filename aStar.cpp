@@ -1,5 +1,14 @@
 #include "aStar.h"
 
+// edge ID helper function
+int getEdgeID(routingInst *rst, int x1, int y1, int x2, int y2) {
+
+  if(x1 != x2) {
+    return ((x1 + x2)/2 + 1 + y1 * (rst->gx - 1));
+  } else {
+    return (((y1 + y2)/2) + 1 +  x1 * (rst->gy - 1) + rst->gy * (rst->gx - 1));
+  }
+}
 
 int solveRoutingAstar(routingInst *rst)
 {
@@ -117,9 +126,9 @@ int routeNetAstar(routingInst *rst,int netInd ,int SpinInd,int TpinInd)
         //and F fields in the node have to be updated
         elem->second->parent = current;
         elem->second->distFromS = current->distFromS + 1;
-        elem->second->edgeID = getEdgeID(rst, current->loc, neighbor->loc);
-        elem->second->edgeCap = rst->edgeCaps[elem->second->edgeID-1];
-        elem->second->edgeUtil = rst->edgeUtils[elem->second->edgeID-1];
+        elem->second->edgeID = getEdgeID(rst, current->loc.x, current->loc.y, neighbor->loc.x, neighbor->loc.y);
+        elem->second->edgeCap = rst->edgeCaps[elem->second->edgeID - 1];
+        elem->second->edgeUtil = rst->edgeUtils[elem->second->edgeID - 1];
         calcG( *elem->second );
         calcF( *elem->second );
 
@@ -180,7 +189,7 @@ int retrace(routingInst *rst, Node* nS, Node* current, int netInd, int segInd)
     costSum += tmp->G - 1;
 
 
-    rst->edgeUtils[edgeID-1]++;
+    rst->edgeUtils[edgeID]++;
 
     tmp =  tmp->parent;
     i++;
@@ -231,8 +240,8 @@ void getNeighbors(routingInst *rst, vector<Node>& neighbors,
     tmp.distToT = m_dist(tmp, T);
     tmp.edgeID = getEdgeID(rst, tmp.loc.x, tmp.loc.y, tmp.loc.x + 1, tmp.loc.y);
     /* use edgeID to find specific edgeCap and edgeUtil */
-    tmp.edgeCap = rst->edgeCaps[tmp.edgeID-1];
-    tmp.edgeUtil = rst->edgeUtils[tmp.edgeID-1];
+    tmp.edgeCap = rst->edgeCaps[tmp.edgeID - 1];
+    tmp.edgeUtil = rst->edgeUtils[tmp.edgeID - 1];
     calcG(tmp);
     calcF(tmp);
     neighbors.push_back(tmp);
@@ -244,8 +253,8 @@ void getNeighbors(routingInst *rst, vector<Node>& neighbors,
     tmp.loc.x = rightX;
     tmp.distToT = m_dist(tmp, T);
     tmp.edgeID = getEdgeID(rst, tmp.loc.x, tmp.loc.y, tmp.loc.x -1, tmp.loc.y);
-    tmp.edgeCap = rst->edgeCaps[tmp.edgeID-1];
-    tmp.edgeUtil = rst->edgeUtils[tmp.edgeID-1];
+    tmp.edgeCap = rst->edgeCaps[tmp.edgeID - 1];
+    tmp.edgeUtil = rst->edgeUtils[tmp.edgeID - 1];
     calcG(tmp);
     calcF(tmp);
     neighbors.push_back(tmp);
@@ -257,8 +266,8 @@ void getNeighbors(routingInst *rst, vector<Node>& neighbors,
     tmp.loc.y = topY;
     tmp.distToT = m_dist(tmp, T);
     tmp.edgeID = getEdgeID(rst, tmp.loc.x, tmp.loc.y, tmp.loc.x, tmp.loc.y - 1);
-    tmp.edgeCap = rst->edgeCaps[tmp.edgeID-1];
-    tmp.edgeUtil = rst->edgeUtils[tmp.edgeID-1];
+    tmp.edgeCap = rst->edgeCaps[tmp.edgeID - 1];
+    tmp.edgeUtil = rst->edgeUtils[tmp.edgeID - 1];
     calcG(tmp);
     calcF(tmp);
     neighbors.push_back(tmp);
@@ -270,8 +279,8 @@ void getNeighbors(routingInst *rst, vector<Node>& neighbors,
     tmp.loc.y = botY;
     tmp.distToT = m_dist(tmp, T);
     tmp.edgeID = getEdgeID(rst, tmp.loc.x, tmp.loc.y, tmp.loc.x, tmp.loc.y + 1);
-    tmp.edgeCap = rst->edgeCaps[tmp.edgeID-1];
-    tmp.edgeUtil = rst->edgeUtils[tmp.edgeID-1];
+    tmp.edgeCap = rst->edgeCaps[tmp.edgeID - 1];
+    tmp.edgeUtil = rst->edgeUtils[tmp.edgeID - 1];
     calcG(tmp);
     calcF(tmp);
     neighbors.push_back(tmp);

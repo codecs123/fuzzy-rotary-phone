@@ -66,12 +66,12 @@ int readBenchmark(const char *fileName, routingInst *rst){
         //inputFile >> bx1 >> by1 >> bx2 >> by2 >> cap;
         fscanf(inputFile, "%d %d %d %d %d", &bx1, &by1, &bx2, &by2, &cap);
         if (bx1 != bx2) {
-            edg = (bx1 + bx2)/2 + by1 * (rst->gx - 1);
+            edg = (bx1 + bx2)/2 + 1 + by1 * (rst->gx - 1);
         } else {
-            edg = ((by1 + by2)/2) * rst->gx + bx1 + rst->gy * (rst->gx - 1);
+	  edg = ((by1 + by2)/2) + 1 + (rst->gy - 1) *  bx1 + rst->gy * (rst->gx - 1);
         }
 
-        rst->edgeCaps[edg] = cap;
+        rst->edgeCaps[edg - 1] = cap;
     }
 
     fclose(inputFile);
@@ -116,29 +116,29 @@ int solveRouting(routingInst *rst){
 	    for (int k = 0; k < rst->nets[i].nroute.segments[j].numEdges; ++k) {
 	      if(abs(x1) > 0) { // horizontal edges
 		if(x1 > 0) {
-		  edgeID = xtemp + ytemp * (rst->gx - 1);
+		  edgeID = (xtemp + 1) + ytemp * (rst->gx - 1);
 		  rst->nets[i].nroute.segments[j].edges[k] = edgeID;
-		  rst->edgeUtils[edgeID] += 1;
+		  rst->edgeUtils[edgeID - 1] += 1;
 		  x1--;
 		  xtemp++;
 		} else if(x1 < 0) {
-		  edgeID = (xtemp - 1) + ytemp * (rst->gx - 1);
+		  edgeID = xtemp + ytemp * (rst->gx - 1);
 		  rst->nets[i].nroute.segments[j].edges[k] = edgeID;
-		  rst->edgeUtils[edgeID] += 1;
+		  rst->edgeUtils[edgeID - 1] += 1;
 		  x1++;
 		  xtemp--;
 		}
 	      } else if(abs(y1) > 0) { //vertical edges
 		if(y1 > 0) {
-		  edgeID = ytemp * (rst->gx) + xtemp + (rst->gy) * (rst->gx - 1);
+		  edgeID = (ytemp + 1) + (rst->gy - 1) * xtemp + (rst->gy) * (rst->gx - 1);
 		  rst->nets[i].nroute.segments[j].edges[k] = edgeID;
-		  rst->edgeUtils[edgeID] += 1;
+		  rst->edgeUtils[edgeID - 1] += 1;
 		  y1--;
 		  ytemp++;
 		} else if (y1 < 0) {
-		  edgeID = (ytemp - 1) * (rst->gx) + xtemp + (rst->gy) * (rst->gx - 1);
+		  edgeID = ytemp + (rst->gy - 1) * xtemp + (rst->gy) * (rst->gx - 1);
 		  rst->nets[i].nroute.segments[j].edges[k] = edgeID;
-		  rst->edgeUtils[edgeID] += 1;
+		  rst->edgeUtils[edgeID - 1] += 1;
 		  y1++;
 		  ytemp--;
 		}
@@ -166,23 +166,23 @@ void edgeEnds(point *p1, point *p2, routingInst *rst, int iD ){
     if(edgeID_VorH <= 0){
 
         /* Assign values to p1,p2 y values */
-        p1->y = ((iD) / ((rst->gx) - 1));
+        p1->y = (iD - 1) / (rst->gx - 1);
         p2->y = (p1->y);
 
         /* Assign values to p1,p2 x values, variables switched for compilation order */
-        p1->x = iD - (((rst->gx) - 1)*(p2->y));
-        p2->x = (p1->x) + 1;
+        p2->x = iD - ((rst->gx) - 1)*(p2->y);
+        p1->x = (p2->x) - 1;
     }
         /* If edge is vertical */
     else{
 
         /* Assign values to p1,p2 x values */
-        p1->x = ((edgeID_VorH) % (rst->gx));
+        p1->x = ((edgeID_VorH - 1) / (rst->gy - 1));
         p2->x = p1->x;
 
         /* Assign values to p1,p2 y values */
-        p1->y = edgeID_VorH / rst->gx;
-        p2->y = (p1->y) + 1;
+        p2->y = edgeID_VorH - p2->x * (rst->gy - 1);
+        p1->y = (p2->y) - 1;
     } 
 }
 
@@ -219,12 +219,15 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
     int yDir = 0; /* used to determine direction */
     int xEx = 0; /* used to hold previous value */
     int yEx = 0; /* used to hold previous value */
+    int numPrinted = 0;
 
     /* Parent loop for number of nets in routingInst*/
     for (int i = 0; i < rst->numNets; i++){
+      if(rst->nets[i].nroute.segments != NULL) {
+	numPrinted++;
 
         /* Print net number */
-        fprintf(outFile,"n%d \n",i);
+        fprintf(outFile,"n%d \n", rst->nets[i].id);
 
         for (int m = 0; m < rst->nets[i].nroute.numSegs; m++){
 
@@ -322,9 +325,12 @@ int writeOutput(const char *outRouteFile, routingInst *rst){
                     }
                 }
       	    }
-        }
+        
+	}
         fprintf(outFile, "!\n");
+      }
     }
+    printf("Printed: %d \n", numPrinted);
     return 1;
 }
 
