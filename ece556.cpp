@@ -1,4 +1,4 @@
-// ECE556 - Copyright 2014 University of Wisconsin-Madison.  All Rights Reserved.
+
 
 #include "ece556.h"
 #include <iostream>
